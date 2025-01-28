@@ -5,7 +5,7 @@ This package contains the LangChain.js integrations for Anthropic through their 
 ## Installation
 
 ```bash npm2yarn
-npm install @langchain/anthropic
+npm install @langchain/anthropic @langchain/core
 ```
 
 This package, along with the main LangChain package, depends on [`@langchain/core`](https://npmjs.com/package/@langchain/core/).
@@ -17,18 +17,18 @@ You can do so by adding appropriate fields to your project's `package.json` like
   "name": "your-project",
   "version": "0.0.0",
   "dependencies": {
-    "@langchain/anthropic": "^0.0.0",
-    "langchain": "0.0.207"
+    "@langchain/anthropic": "^0.0.9",
+    "@langchain/core": "^0.3.0"
   },
   "resolutions": {
-    "@langchain/core": "0.1.2"
+    "@langchain/core": "^0.3.0"
   },
   "overrides": {
-    "@langchain/core": "0.1.2"
+    "@langchain/core": "^0.3.0"
   },
   "pnpm": {
     "overrides": {
-      "@langchain/core": "0.1.2"
+      "@langchain/core": "^0.3.0"
     }
   }
 }
@@ -52,7 +52,7 @@ Then initialize
 import { ChatAnthropicMessages } from "@langchain/anthropic";
 
 const model = new ChatAnthropic({
-  anthropicApiKey: process.env.ANTHROPIC_API_KEY,
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });
 const response = await model.invoke(new HumanMessage("Hello world!"));
 ```
@@ -63,8 +63,8 @@ const response = await model.invoke(new HumanMessage("Hello world!"));
 import { ChatAnthropicMessages } from "@langchain/anthropic";
 
 const model = new ChatAnthropic({
-  anthropicApiKey: process.env.ANTHROPIC_API_KEY,
-  modelName: "claude-2.1",
+  apiKey: process.env.ANTHROPIC_API_KEY,
+  model: "claude-3-sonnet-20240229",
 });
 const response = await model.stream(new HumanMessage("Hello world!"));
 ```
@@ -111,7 +111,7 @@ yarn lint && yarn format
 
 ### Adding new entrypoints
 
-If you add a new file to be exported, either import & re-export from `src/index.ts`, or add it to `scripts/create-entrypoints.js` and run `yarn build` to generate the new entrypoint.
+If you add a new file to be exported, either import & re-export from `src/index.ts`, or add it to the `entrypoints` field in the `config` variable located inside `langchain.config.js` and run `yarn build` to generate the new entrypoint.
 
 ## Publishing
 

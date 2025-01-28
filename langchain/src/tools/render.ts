@@ -1,6 +1,9 @@
-import { zodToJsonSchema } from "zod-to-json-schema";
-import { JsonSchema7ObjectType } from "zod-to-json-schema/src/parsers/object.js";
+import { zodToJsonSchema, JsonSchema7ObjectType } from "zod-to-json-schema";
 import { StructuredToolInterface } from "@langchain/core/tools";
+import {
+  ToolDefinition,
+  isOpenAITool,
+} from "@langchain/core/language_models/base";
 
 /**
  * Render the tool name and description in plain text.
@@ -14,9 +17,21 @@ import { StructuredToolInterface } from "@langchain/core/tools";
  * @returns a string of all tools and their descriptions
  */
 export function renderTextDescription(
-  tools: StructuredToolInterface[]
+  tools: StructuredToolInterface[] | ToolDefinition[]
 ): string {
-  return tools.map((tool) => `${tool.name}: ${tool.description}`).join("\n");
+  if ((tools as unknown[]).every(isOpenAITool)) {
+    return (tools as ToolDefinition[])
+      .map(
+        (tool) =>
+          `${tool.function.name}${
+            tool.function.description ? `: ${tool.function.description}` : ""
+          }`
+      )
+      .join("\n");
+  }
+  return (tools as StructuredToolInterface[])
+    .map((tool) => `${tool.name}: ${tool.description}`)
+    .join("\n");
 }
 
 /**
@@ -31,9 +46,19 @@ export function renderTextDescription(
  * @returns a string of all tools, their descriptions and a stringified version of their schemas
  */
 export function renderTextDescriptionAndArgs(
-  tools: StructuredToolInterface[]
+  tools: StructuredToolInterface[] | ToolDefinition[]
 ): string {
-  return tools
+  if ((tools as unknown[]).every(isOpenAITool)) {
+    return (tools as ToolDefinition[])
+      .map(
+        (tool) =>
+          `${tool.function.name}${
+            tool.function.description ? `: ${tool.function.description}` : ""
+          }, args: ${JSON.stringify(tool.function.parameters)}`
+      )
+      .join("\n");
+  }
+  return (tools as StructuredToolInterface[])
     .map(
       (tool) =>
         `${tool.name}: ${tool.description}, args: ${JSON.stringify(

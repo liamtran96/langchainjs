@@ -2,8 +2,8 @@
 import { jest, test, expect } from "@jest/globals";
 
 import { type Collection } from "chromadb";
+import { FakeEmbeddings } from "@langchain/core/utils/testing";
 import { Chroma } from "../chroma.js";
-import { FakeEmbeddings } from "../../utils/testing.js";
 
 const mockCollection = {
   count: jest.fn<Collection["count"]>().mockResolvedValue(5),
@@ -128,8 +128,27 @@ describe("Chroma", () => {
     expect(mockCollection.query).toHaveBeenCalledWith({
       queryEmbeddings: query,
       nResults: expectedResultCount,
-      where: {},
+      where: undefined,
     });
     expect(results).toHaveLength(5);
+  });
+
+  test("should return id properly when adding documents", async () => {
+    const document1 = {
+      pageContent: "Document 1",
+      metadata: { source: "https://example.com" },
+    };
+
+    const documents = [document1];
+
+    const chroma = new Chroma(new FakeEmbeddings(), {
+      collectionName: "new-test-collection",
+      index: mockClient,
+    });
+
+    await chroma.addDocuments(documents, { ids: ["0"] });
+    const result = await chroma.similaritySearch(document1.pageContent, 1);
+
+    expect(result[0]).toHaveProperty("id", "0");
   });
 });

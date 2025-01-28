@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { beforeEach, expect, test } from "@jest/globals";
 import type { EmbeddingsInterface } from "@langchain/core/embeddings";
-import { SyntheticEmbeddings } from "../../utils/testing.js";
+import { SyntheticEmbeddings } from "@langchain/core/utils/testing";
 import { InMemoryDocstore } from "../../stores/doc/in_memory.js";
 import { MatchingEngineArgs, MatchingEngine } from "../googlevertexai.js";
 
@@ -48,7 +48,7 @@ describe("Vertex AI matching", () => {
       charlie: ["e", "f"],
     };
     const flat = engine.cleanMetadata(m);
-    console.log("flatten metadata", flat);
+    // console.log("flatten metadata", flat);
     expect(flat.alpha).toEqual("a");
     expect(flat["bravo.uno"]).toEqual(1);
     expect(flat["bravo.dos"]).toEqual("two");
@@ -75,7 +75,7 @@ describe("Vertex AI matching", () => {
       charlie: ["e", "f"],
     };
     const r = engine.metadataToRestrictions(m);
-    console.log("restrictions", r);
+    // console.log("restrictions", r);
     expect(r[0].namespace).toEqual("alpha");
     expect(r[0].allowList).toEqual(["a"]);
     expect(r[4].namespace).toEqual("bravo.quatro");

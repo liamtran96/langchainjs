@@ -12,10 +12,12 @@ import { ChatOllama } from "../ollama.js";
 
 test.skip("test call", async () => {
   const ollama = new ChatOllama({});
-  const result = await ollama.predict(
+  // @eslint-disable-next-line/@typescript-eslint/ban-ts-comment
+  // @ts-expect-error unused var
+  const result = await ollama.invoke(
     "What is a good name for a company that makes colorful socks?"
   );
-  console.log({ result });
+  // console.log({ result });
 });
 
 test.skip("test call with callback", async () => {
@@ -23,7 +25,7 @@ test.skip("test call with callback", async () => {
     baseUrl: "http://localhost:11434",
   });
   const tokens: string[] = [];
-  const result = await ollama.predict(
+  const result = await ollama.invoke(
     "What is a good name for a company that makes colorful socks?",
     {
       callbacks: [
@@ -60,7 +62,7 @@ test.skip("should abort the request", async () => {
   const controller = new AbortController();
 
   await expect(() => {
-    const ret = ollama.predict("Respond with an extremely verbose response", {
+    const ret = ollama.invoke("Respond with an extremely verbose response", {
       signal: controller.signal,
     });
     controller.abort();
@@ -70,18 +72,22 @@ test.skip("should abort the request", async () => {
 
 test.skip("Test multiple messages", async () => {
   const model = new ChatOllama({ baseUrl: "http://localhost:11434" });
-  const res = await model.call([
+  // @eslint-disable-next-line/@typescript-eslint/ban-ts-comment
+  // @ts-expect-error unused var
+  const res = await model.invoke([
     new HumanMessage({ content: "My name is Jonas" }),
   ]);
-  console.log({ res });
-  const res2 = await model.call([
+  // console.log({ res });
+  // @eslint-disable-next-line/@typescript-eslint/ban-ts-comment
+  // @ts-expect-error unused var
+  const res2 = await model.invoke([
     new HumanMessage("My name is Jonas"),
     new AIMessage(
       "Hello Jonas! It's nice to meet you. Is there anything I can help you with?"
     ),
     new HumanMessage("What did I say my name was?"),
   ]);
-  console.log({ res2 });
+  // console.log({ res2 });
 });
 
 test.skip("should stream through with a bytes output parser", async () => {
@@ -106,7 +112,7 @@ test.skip("should stream through with a bytes output parser", async () => {
   for await (const chunk of stream) {
     chunks.push(chunk);
   }
-  console.log(chunks.join(""));
+  // console.log(chunks.join(""));
   expect(chunks.length).toBeGreaterThan(1);
 });
 
@@ -140,6 +146,8 @@ test.skip("Test ChatOllama with an image", async () => {
     model: "llava",
     baseUrl: "http://127.0.0.1:11434",
   });
+  // @eslint-disable-next-line/@typescript-eslint/ban-ts-comment
+  // @ts-expect-error unused var
   const res = await chat.invoke([
     new HumanMessage({
       content: [
@@ -154,5 +162,25 @@ test.skip("Test ChatOllama with an image", async () => {
       ],
     }),
   ]);
-  console.log({ res });
+  // console.log({ res });
+});
+
+test.skip("test max tokens (numPredict)", async () => {
+  const ollama = new ChatOllama({
+    numPredict: 10,
+  }).pipe(new StringOutputParser());
+  const stream = await ollama.stream(
+    "explain quantum physics to me in as many words as possible"
+  );
+  let numTokens = 0;
+  let response = "";
+  for await (const s of stream) {
+    numTokens += 1;
+    response += s;
+  }
+
+  // console.log({ numTokens, response });
+  // Ollama doesn't always stream back the exact number of tokens, so we
+  // check for a number which is slightly above the `numPredict`.
+  expect(numTokens).toBeLessThanOrEqual(12);
 });

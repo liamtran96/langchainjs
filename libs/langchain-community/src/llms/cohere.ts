@@ -3,6 +3,7 @@ import { LLM, type BaseLLMParams } from "@langchain/core/language_models/llms";
 
 /**
  * Interface for the input parameters specific to the Cohere model.
+ * @deprecated Use `CohereInput` from `@langchain/cohere` instead.
  */
 export interface CohereInput extends BaseLLMParams {
   /** Sampling temperature to use */
@@ -30,11 +31,12 @@ export interface CohereInput extends BaseLLMParams {
  *   maxRetries: 5,
  * });
  *
- * const res = await model.call(
+ * const res = await model.invoke(
  *   "Question: What would be a good company name for a company that makes colorful socks?\nAnswer:"
  * );
  * console.log({ res });
  * ```
+ * @deprecated Use `Cohere` from `@langchain/cohere` instead.
  */
 export class Cohere extends LLM implements CohereInput {
   static lc_name() {
