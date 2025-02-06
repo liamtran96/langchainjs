@@ -1,9 +1,10 @@
 import { Runnable } from "../runnables/index.js";
 import type { RunnableConfig } from "../runnables/config.js";
 import type { BasePromptValueInterface } from "../prompt_values.js";
-import type { BaseMessage } from "../messages/index.js";
+import type { BaseMessage, MessageContentComplex } from "../messages/index.js";
 import type { Callbacks } from "../callbacks/manager.js";
 import type { Generation, ChatGeneration } from "../outputs.js";
+import { addLangChainErrorFields } from "../errors/index.js";
 
 /**
  * Options for formatting instructions.
@@ -48,6 +49,18 @@ export abstract class BaseLLMOutputParser<T = unknown> extends Runnable<
     return this.parseResult(generations, callbacks);
   }
 
+  protected _baseMessageToString(message: BaseMessage): string {
+    return typeof message.content === "string"
+      ? message.content
+      : this._baseMessageContentToString(message.content);
+  }
+
+  protected _baseMessageContentToString(
+    content: MessageContentComplex[]
+  ): string {
+    return JSON.stringify(content);
+  }
+
   /**
    * Calls the parser with a given input and optional configuration options.
    * If the input is a string, it creates a generation with the input as
@@ -64,23 +77,23 @@ export abstract class BaseLLMOutputParser<T = unknown> extends Runnable<
   ): Promise<T> {
     if (typeof input === "string") {
       return this._callWithConfig(
-        async (input: string): Promise<T> =>
-          this.parseResult([{ text: input }]),
+        async (input: string, options): Promise<T> =>
+          this.parseResult([{ text: input }], options?.callbacks),
         input,
         { ...options, runType: "parser" }
       );
     } else {
       return this._callWithConfig(
-        async (input: BaseMessage): Promise<T> =>
-          this.parseResult([
-            {
-              message: input,
-              text:
-                typeof input.content === "string"
-                  ? input.content
-                  : JSON.stringify(input.content),
-            },
-          ]),
+        async (input: BaseMessage, options): Promise<T> =>
+          this.parseResult(
+            [
+              {
+                message: input,
+                text: this._baseMessageToString(input),
+              },
+            ],
+            options?.callbacks
+          ),
         input,
         { ...options, runType: "parser" }
       );
@@ -181,5 +194,7 @@ export class OutputParserException extends Error {
         );
       }
     }
+
+    addLangChainErrorFields(this, "OUTPUT_PARSING_FAILURE");
   }
 }

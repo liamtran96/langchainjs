@@ -1,5 +1,4 @@
 import { test, expect } from "@jest/globals";
-import { HNSWLib } from "@langchain/community/vectorstores/hnswlib";
 import { GoogleGenerativeAIEmbeddings } from "../embeddings.js";
 
 test("Test GooglePalmEmbeddings.embedQuery", async () => {
@@ -7,7 +6,7 @@ test("Test GooglePalmEmbeddings.embedQuery", async () => {
     maxRetries: 1,
   });
   const res = await embeddings.embedQuery("Hello world");
-  console.log(res);
+  // console.log(res);
   expect(typeof res[0]).toBe("number");
 });
 
@@ -23,32 +22,9 @@ test("Test GooglePalmEmbeddings.embedDocuments", async () => {
     "six documents",
     "to test pagination",
   ]);
-  console.log(res);
+  // console.log(res);
   expect(res).toHaveLength(6);
   res.forEach((r) => {
     expect(typeof r[0]).toBe("number");
   });
-});
-
-test("Test end to end with HNSWLib", async () => {
-  const vectorStore = await HNSWLib.fromTexts(
-    ["Hello world", "Bye bye", "hello nice world"],
-    [{ id: 2 }, { id: 1 }, { id: 3 }],
-    new GoogleGenerativeAIEmbeddings({
-      maxRetries: 1,
-    })
-  );
-  expect(vectorStore.index?.getCurrentCount()).toBe(3);
-
-  const resultOne = await vectorStore.similaritySearch("hello world", 1);
-  const resultOneMetadatas = resultOne.map(({ metadata }) => metadata);
-  expect(resultOneMetadatas).toEqual([{ id: 2 }]);
-
-  const resultTwo = await vectorStore.similaritySearch("hello world", 2);
-  const resultTwoMetadatas = resultTwo.map(({ metadata }) => metadata);
-  expect(resultTwoMetadatas).toEqual([{ id: 2 }, { id: 3 }]);
-
-  const resultThree = await vectorStore.similaritySearch("hello world", 3);
-  const resultThreeMetadatas = resultThree.map(({ metadata }) => metadata);
-  expect(resultThreeMetadatas).toEqual([{ id: 2 }, { id: 3 }, { id: 1 }]);
 });

@@ -21,6 +21,14 @@ npm install discord.js
 
 import ToolExample from "@examples/tools/discord.ts";
 
+import IntegrationInstallTooltip from "@mdx_components/integration_install_tooltip.mdx";
+
+<IntegrationInstallTooltip></IntegrationInstallTooltip>
+
+```bash npm2yarn
+npm install @langchain/openai @langchain/core
+```
+
 <CodeBlock language="typescript">{ToolExample}</CodeBlock>
 
 ## Usage, in an Agent
@@ -28,3 +36,8 @@ import ToolExample from "@examples/tools/discord.ts";
 import AgentExample from "@examples/agents/discord.ts";
 
 <CodeBlock language="typescript">{AgentExample}</CodeBlock>
+
+## Related
+
+- Tool [conceptual guide](/docs/concepts/tools)
+- Tool [how-to guides](/docs/how_to/#tools)
