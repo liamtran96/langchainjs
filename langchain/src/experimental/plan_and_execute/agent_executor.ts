@@ -1,4 +1,7 @@
 import type { BaseLanguageModelInterface } from "@langchain/core/language_models/base";
+import { ChainValues } from "@langchain/core/utils/types";
+import { Tool, DynamicStructuredTool } from "@langchain/core/tools";
+import { CallbackManagerForChainRun } from "@langchain/core/callbacks/manager";
 import { BaseChain, ChainInputs } from "../../chains/base.js";
 import {
   BasePlanner,
@@ -13,12 +16,8 @@ import {
   DEFAULT_STEP_EXECUTOR_HUMAN_CHAT_MESSAGE_TEMPLATE,
   getPlannerChatPrompt,
 } from "./prompt.js";
-import { ChainValues } from "../../schema/index.js";
-import { CallbackManagerForChainRun } from "../../callbacks/manager.js";
 import { LLMChain } from "../../chains/llm_chain.js";
 import { PlanOutputParser } from "./outputParser.js";
-import { Tool } from "../../tools/base.js";
-import { DynamicStructuredTool } from "../../tools/dynamic.js";
 import { ChatAgent } from "../../agents/chat/index.js";
 import { StructuredChatAgent } from "../../agents/index.js";
 import { SerializedLLMChain } from "../../chains/serde.js";
@@ -133,7 +132,7 @@ export class PlanAndExecuteAgentExecutor extends BaseChain {
   }) {
     let agent;
 
-    if (isDynamicStructuredTool(tools[0])) {
+    if (tools.length > 0 && isDynamicStructuredTool(tools[0])) {
       agent = StructuredChatAgent.fromLLMAndTools(llm, tools, {
         humanMessageTemplate,
         inputVariables: ["previous_steps", "current_step", "agent_scratchpad"],

@@ -1,6 +1,7 @@
 /* eslint-disable no-promise-executor-return */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { test, expect } from "@jest/globals";
 import { StringOutputParser } from "../../output_parsers/string.js";
 import { PromptTemplate } from "../../prompts/prompt.js";
 import { RunnableSequence } from "../base.js";
@@ -46,6 +47,10 @@ interface RunnableInterfaceV0<RunInput, RunOutput, CallOptions = any> {
     generator: AsyncGenerator<RunInput>,
     options: Partial<CallOptions>
   ): AsyncGenerator<RunOutput>;
+
+  getName(suffix?: string): string;
+
+  get lc_id(): string[];
 }
 
 class IterableReadableStreamV0<T> extends ReadableStream<T> {
@@ -88,7 +93,7 @@ class IterableReadableStreamV0<T> extends ReadableStream<T> {
   }
 
   [Symbol.asyncIterator]() {
-    return this;
+    return this as any;
   }
 
   static fromReadableStream<T>(stream: ReadableStream<T>) {
@@ -236,6 +241,14 @@ class RunnableV0
     _options: Partial<any>
   ): AsyncGenerator<AIMessageV0> {
     throw new Error("Not implemented");
+  }
+
+  getName(): string {
+    return "TEST";
+  }
+
+  get lc_id(): string[] {
+    return ["TEST"];
   }
 }
 

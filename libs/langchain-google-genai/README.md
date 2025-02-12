@@ -5,7 +5,7 @@ This package contains the LangChain.js integrations for Gemini through their gen
 ## Installation
 
 ```bash npm2yarn
-npm install @langchain/google-genai
+npm install @langchain/google-genai @langchain/core
 ```
 
 This package, along with the main LangChain package, depends on [`@langchain/core`](https://npmjs.com/package/@langchain/core/).
@@ -17,18 +17,18 @@ You can do so by adding appropriate field to your project's `package.json` like 
   "name": "your-project",
   "version": "0.0.0",
   "dependencies": {
-    "@langchain/google-genai": "^0.0.0",
-    "langchain": "0.0.207"
+    "@langchain/core": "^0.3.0",
+    "@langchain/google-genai": "^0.0.0"
   },
   "resolutions": {
-    "@langchain/core": "0.1.2"
+    "@langchain/core": "^0.3.0"
   },
   "overrides": {
-    "@langchain/core": "0.1.2"
+    "@langchain/core": "^0.3.0"
   },
   "pnpm": {
     "overrides": {
-      "@langchain/core": "0.1.2"
+      "@langchain/core": "^0.3.0"
     }
   }
 }
@@ -55,7 +55,7 @@ const model = new ChatGoogleGenerativeAI({
   modelName: "gemini-pro",
   maxOutputTokens: 2048,
 });
-const response = await mode.invoke(new HumanMessage("Hello world!"));
+const response = await model.invoke(new HumanMessage("Hello world!"));
 ```
 
 #### Multimodal inputs
@@ -160,4 +160,4 @@ yarn lint && yarn format
 
 ### Adding new entrypoints
 
-If you add a new file to be exported, either import & re-export from `src/index.ts`, or add it to `scripts/create-entrypoints.js` and run `yarn build` to generate the new entrypoint.
+If you add a new file to be exported, either import & re-export from `src/index.ts`, or add it to the `entrypoints` field in the `config` variable located inside `langchain.config.js` and run `yarn build` to generate the new entrypoint.
